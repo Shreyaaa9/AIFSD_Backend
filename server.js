@@ -10,8 +10,17 @@ dotenv.config();
 
 const app = express();
 
-// ─── Middleware ──────────────────────────────────────────────
-app.use(cors());
+// ─── CORS Configuration ───────────────────────────────────────
+const corsOptions = {
+  origin: "*", // Allow all origins (frontend on Render, localhost, etc.)
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: false,
+};
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Handle preflight requests
+
+// ─── Middleware ───────────────────────────────────────────────
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
