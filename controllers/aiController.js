@@ -118,10 +118,11 @@ Departments: Water Supply Dept | Electricity Dept | Sanitation Dept | Public Wor
 
   // ─── Multiple free models to try in sequence ──────────────────────
   const MODELS = [
-    "meta-llama/llama-3.1-8b-instruct:free",
-    "mistralai/mistral-7b-instruct:free",
-    "deepseek/deepseek-r1:free",
-    "google/gemma-3-1b-it:free",
+    "qwen/qwen-2.5-7b-instruct:free",
+    "google/gemma-2-9b-it:free",
+    "microsoft/phi-3-mini-128k-instruct:free",
+    "meta-llama/llama-3.2-3b-instruct:free",
+    "deepseek/deepseek-chat-v3-0324:free",
   ];
 
   let analysis = null;
