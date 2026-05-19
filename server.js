@@ -12,13 +12,13 @@ const app = express();
 
 // ─── CORS Configuration ───────────────────────────────────────
 const corsOptions = {
-  origin: "*", // Allow all origins (frontend on Render, localhost, etc.)
+  origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: false,
 };
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Handle preflight requests
+app.options("*", cors(corsOptions));
 
 // ─── Middleware ───────────────────────────────────────────────
 app.use(express.json());
@@ -35,24 +35,35 @@ app.get("/", (req, res) => {
     message: "AI-Based Smart Complaint Management System API",
     status: "Running",
     version: "1.0.0",
+    db: mongoose.connection.readyState === 1 ? "Connected" : "Connecting...",
   });
 });
 
 // ─── Error Middleware ─────────────────────────────────────────
 app.use(errorHandler);
 
-// ─── MongoDB Connection ───────────────────────────────────────
+// ─── Start Server FIRST, then connect MongoDB ─────────────────
 const PORT = process.env.PORT || 5000;
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("✅ MongoDB Connected Successfully");
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+
+// ─── MongoDB Connection (non-blocking) ───────────────────────
+const MONGO_URI = process.env.MONGO_URI;
+
+if (!MONGO_URI) {
+  console.error("❌ MONGO_URI not set in environment variables");
+} else {
+  mongoose
+    .connect(MONGO_URI, {
+      dbName: "complaintDB",
+    })
+    .then(() => {
+      console.log("✅ MongoDB Connected Successfully");
+    })
+    .catch((err) => {
+      console.error("❌ MongoDB Connection Failed:", err.message);
+      // Don't exit — server keeps running so Render doesn't mark it as crashed
     });
-  })
-  .catch((err) => {
-    console.error("❌ MongoDB Connection Failed:", err.message);
-    process.exit(1);
-  });
+}
